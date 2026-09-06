@@ -33,6 +33,7 @@ jobs:
         with:
           commit: "chore: version packages"
           title: "chore: version packages"
+          createGithubReleases: false
           version: pnpm version-packages
           publish: pnpm release
         env:
