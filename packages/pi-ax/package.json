@@ -1,5 +1,5 @@
 {
-  "name": "pi-ax",
+  "name": "@jhnsml/pi-ax",
   "version": "0.1.0",
   "description": "Pi native ax tool for read-only web fetch, discovery, and extraction",
   "keywords": [

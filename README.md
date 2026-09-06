@@ -2,10 +2,10 @@
 
 A pnpm workspace for independently published Pi packages:
 
-- [`pi-ax`](./packages/pi-ax) — a read-only `ax` web extraction tool.
-- [`pi-bash-tools`](./packages/pi-bash-tools) — typed tools for modern command-line utilities.
+- [`@jhnsml/pi-ax`](./packages/pi-ax) — a read-only `ax` web extraction tool.
+- [`@jhnsml/pi-bash-tools`](./packages/pi-bash-tools) — typed tools for modern command-line utilities.
 
-The package names and Pi extension manifests remain unchanged, so npm consumers can continue to install them independently.
+Each package is independently versioned and installable.
 
 ## Development
 
@@ -23,8 +23,8 @@ pnpm pack:dry
 Run one package with pnpm filters:
 
 ```bash
-pnpm --filter pi-ax check
-pnpm --filter pi-bash-tools test
+pnpm --filter @jhnsml/pi-ax check
+pnpm --filter @jhnsml/pi-bash-tools test
 ```
 
 Vite+ provides the repository's Oxfmt, Oxlint, Vitest, TypeScript, staged-file checks, and Git hook dispatcher. The vendored generic anti-slop Oxlint plugin lives under [`tools/oxlint/anti-slop`](./tools/oxlint/anti-slop) and is enabled for both packages. Test scaffolding and the existing Pi/ax parsing and result-shaping seams have documented configuration exceptions where the rules do not model their runtime contracts.

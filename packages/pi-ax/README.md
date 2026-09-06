@@ -1,4 +1,4 @@
-# pi-ax
+# @jhnsml/pi-ax
 
 A Pi-native tool for using the [`ax` CLI](https://ax.yusuke.run/) for read-only web fetch, discovery, and extraction.
 
@@ -8,11 +8,11 @@ Operation-specific field rules live in `src/argv.ts`, alongside the flat tool sc
 
 ## Install
 
-`pi-ax` does not bundle the `ax` executable. Install [`ax` v0.1.23 or newer](https://github.com/yusukebe/ax/releases) and make sure it is available on `PATH`, then install the Pi package:
+`@jhnsml/pi-ax` does not bundle the `ax` executable. Install [`ax` v0.1.23 or newer](https://github.com/yusukebe/ax/releases) and make sure it is available on `PATH`, then install the Pi package:
 
 ```bash
 ax --version
-pi install npm:pi-ax
+pi install npm:@jhnsml/pi-ax
 ```
 
 The tool checks the CLI version before execution and reports an actionable error when it is too old. Set `AX_BIN` to an absolute executable path when `ax` is installed somewhere non-standard.
@@ -72,7 +72,7 @@ Use either one request or a `requests` array of 1–10 complete requests. Batche
 
 ### Safety and routing
 
-`pi-ax` is read-only. It doesn't expose mutating methods, request bodies, credentials, stdin, insecure TLS, output files, or arbitrary shell commands. It allows only public headers and blocks known metadata endpoints, although hostname checks can't fully prevent DNS rebinding.
+`@jhnsml/pi-ax` is read-only. It doesn't expose mutating methods, request bodies, credentials, stdin, insecure TLS, output files, or arbitrary shell commands. It allows only public headers and blocks known metadata endpoints, although hostname checks can't fully prevent DNS rebinding.
 
 Use `ax` for static pages, documentation, local files, and structured extraction. Use:
 

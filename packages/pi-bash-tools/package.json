@@ -1,5 +1,5 @@
 {
-  "name": "pi-bash-tools",
+  "name": "@jhnsml/pi-bash-tools",
   "version": "0.1.0",
   "description": "Typed Pi tools for modern command-line utilities",
   "keywords": [

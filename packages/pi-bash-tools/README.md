@@ -1,4 +1,4 @@
-# pi-bash-tools
+# @jhnsml/pi-bash-tools
 
 A Pi package that exposes modern command-line utilities as typed tools, plus a `/jump` command backed by zoxide.
 
@@ -8,7 +8,7 @@ The development baseline is Pi 0.80.9; verification currently uses Pi 0.80.10 an
 
 ## Install
 
-`pi-bash-tools` does not bundle the underlying executables. On macOS, install them with Homebrew:
+`@jhnsml/pi-bash-tools` does not bundle the underlying executables. On macOS, install them with Homebrew:
 
 ```bash
 brew install bat eza ast-grep jq yq difftastic gh sd scc zoxide
@@ -17,7 +17,7 @@ brew install bat eza ast-grep jq yq difftastic gh sd scc zoxide
 Then install the published Pi package from npm:
 
 ```bash
-pi install npm:pi-bash-tools
+pi install npm:@jhnsml/pi-bash-tools
 ```
 
 ## Tools
