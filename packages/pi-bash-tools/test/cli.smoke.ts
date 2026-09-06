@@ -23,7 +23,15 @@ const exec: ExtensionAPI["exec"] = (command, args, options) =>
     });
   });
 
-const cases: { cli: string; tool: string; input: Record<string, unknown>; expected: string }[] = [
+type SmokeCase = {
+  cli: string;
+  tool: string;
+  input: Record<string, unknown>;
+  expected: string;
+  versionMarker?: string;
+};
+
+const cases: SmokeCase[] = [
   {
     cli: "bat",
     tool: "read_file",
@@ -41,6 +49,7 @@ const cases: { cli: string; tool: string; input: Record<string, unknown>; expect
     tool: "ast_search",
     input: { path: "--help.ts", pattern: "console.log($A)", lang: "ts" },
     expected: "console.log",
+    versionMarker: "ast-grep",
   },
   {
     cli: "jq",
@@ -83,14 +92,18 @@ const cases: { cli: string; tool: string; input: Record<string, unknown>; expect
   { cli: "gh", tool: "gh", input: { args: "--version" }, expected: "gh version" },
 ];
 
-it.for(cases)("$tool: $input", async ({ cli, tool, input, expected }, context) => {
+it.for(cases)("$tool: $input", async ({ cli, tool, input, expected, versionMarker }, context) => {
+  let version: Awaited<ReturnType<ExtensionAPI["exec"]>>;
   try {
-    await exec(cli, ["--version"], { timeout: 5000 });
+    version = await exec(cli, ["--version"], { timeout: 5000 });
   } catch (error) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
       context.skip(`${cli} is not installed`);
     }
     throw error;
+  }
+  if (versionMarker && !`${version.stdout}\n${version.stderr}`.includes(versionMarker)) {
+    context.skip(`${cli} is not the expected executable`);
   }
   const cwd = await mkdtemp(join(tmpdir(), "pi-bash-tools-smoke-"));
   try {
