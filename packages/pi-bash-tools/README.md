@@ -22,27 +22,39 @@ pi install npm:pi-bash-tools
 
 ## Tools
 
-| Pi tool          | CLI             | Purpose                                           |
-| ---------------- | --------------- | ------------------------------------------------- |
-| `read_file`      | `bat`           | Read files with line numbers and optional ranges  |
-| `list_dir`       | `eza`           | List directories, metadata, trees, and Git status |
-| `ast_search`     | `sg` (ast-grep) | Search source code with structural patterns       |
-| `json_query`     | `jq`            | Query JSON files or inline JSON                   |
-| `yaml_query`     | `yq`            | Query YAML, TOML, or JSON files and inline data   |
-| `diff_files`     | `difft`         | Compare files with a syntax-aware diff            |
-| `gh`             | `gh`            | Run GitHub CLI subcommands with typed tool input  |
-| `find_replace`   | `sd`            | Replace text in a file                            |
-| `codebase_stats` | `scc`           | Analyze code size and approximate complexity      |
+| Pi interface     | CLI project                                                                                       | Purpose                                           |
+| ---------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `read_file`      | [`bat`](https://github.com/sharkdp/bat)                                                           | Read files with line numbers and optional ranges  |
+| `list_dir`       | [`eza`](https://eza.rocks/) ([source](https://github.com/eza-community/eza))                      | List directories, metadata, trees, and Git status |
+| `ast_search`     | [`sg` (`ast-grep`)](https://ast-grep.github.io/) ([source](https://github.com/ast-grep/ast-grep)) | Search source code with structural patterns       |
+| `json_query`     | [`jq`](https://jqlang.org/) ([source](https://github.com/jqlang/jq))                              | Query JSON files or inline JSON                   |
+| `yaml_query`     | [`yq`](https://mikefarah.gitbook.io/yq/) ([source](https://github.com/mikefarah/yq))              | Query YAML, TOML, or JSON files and inline data   |
+| `diff_files`     | [`difft`](https://difftastic.wilfred.me.uk/) ([source](https://github.com/Wilfred/difftastic))    | Compare files with a syntax-aware diff            |
+| `gh`             | [`gh`](https://cli.github.com/) ([source](https://github.com/cli/cli))                            | Run GitHub CLI subcommands with typed tool input  |
+| `find_replace`   | [`sd`](https://github.com/chmln/sd)                                                               | Replace text in a file                            |
+| `codebase_stats` | [`scc`](https://github.com/boyter/scc)                                                            | Analyze code size and approximate complexity      |
+| `/jump`          | [`zoxide`](https://github.com/ajeetdsouza/zoxide)                                                 | Switch a conversation fork to another directory   |
 
-`/jump <query>` uses `zoxide query` to find a directory. After confirmation, it forks your saved conversation into that directory and switches sessions through Pi's session lifecycle. Your original session remains unchanged. This requires a saved conversation and a UI that supports confirmation; it does not assign to Pi's read-only working-directory context.
+### Jump between projects
 
-File operands beginning with `-` are passed with a `./` prefix so CLI parsers treat them as paths, not options. A path of `-` means the file named `-`, not stdin. Query expressions are passed separately from options.
+Run `/jump <query>` to find a directory with zoxide. After you confirm the destination, Pi forks the saved conversation and switches to the fork. The original conversation remains unchanged.
 
-Line numbers and tree depth must be positive integers. A read range must end at or after its start. Output formats are limited to `yaml`, `json`, `toml`, and `props`; sort keys are limited to the values listed in the tool schema. Pi validates these schemas before execution.
+`/jump` requires a saved conversation and a UI that supports confirmation.
 
-`yaml_query` requires Mike Farah's Go-based `yq` (the Homebrew `yq` formula), not the Python tool with the same name. It selects the TOML parser for `.toml` files and recognizable inline TOML assignments or tables containing assignments. Ambiguous inline data such as `[name]` uses the YAML parser; use a `.toml` file when you need to select TOML explicitly.
+### Input rules
 
-Tool output and command errors stay within Pi's standard 2,000-line or 50 KB ceiling, including truncation notices. Successful commands preserve stderr under a labeled section before stdout, so large stdout does not hide diagnostics. Without stderr, stdout is returned unchanged. When output is truncated, the tool saves the complete presented output to a temporary file and returns its path. Result details include a separately bounded raw stdout value and a `stdoutTruncated` flag for command consumers such as `/jump`. This flag is independent of truncation of the combined presentation.
+| Input                 | Behavior                                                                                                      |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- |
+| File paths            | Leading `-` is protected with `./`. A path of `-` means the file named `-`, not stdin.                        |
+| Line ranges and depth | Values must be positive integers; a line range can't end before it starts.                                    |
+| Output formats        | `yaml_query` accepts `yaml`, `json`, `toml`, and `props`.                                                     |
+| TOML input            | `yaml_query` requires Mike Farah's Go-based `yq`. Clear TOML uses its TOML parser; ambiguous input uses YAML. |
+
+Pi validates tool inputs before execution and passes query expressions separately from CLI options.
+
+### Output
+
+Tool output is limited to 2,000 lines or 50 KB. Diagnostics appear before standard output. If the result is truncated, it includes the path to a temporary file containing the complete combined output.
 
 ## Design
 
