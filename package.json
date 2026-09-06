@@ -1,0 +1,39 @@
+{
+  "name": "pi-tools",
+  "private": true,
+  "description": "A pnpm workspace for Pi packages",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhnsml/pi-tools.git"
+  },
+  "type": "module",
+  "scripts": {
+    "check": "pnpm typecheck:anti-slop && pnpm --filter './packages/*' run check",
+    "typecheck": "pnpm typecheck:anti-slop && pnpm --filter './packages/*' run typecheck",
+    "test": "pnpm test:anti-slop && pnpm --filter './packages/*' run test",
+    "test:coverage": "pnpm --filter './packages/*' run test:coverage",
+    "test:smoke": "pnpm --filter pi-bash-tools run test:smoke",
+    "test:anti-slop": "node scripts/test-anti-slop.mjs",
+    "typecheck:anti-slop": "tsc --noEmit -p tools/oxlint/anti-slop/tsconfig.json",
+    "pack:dry": "pnpm --filter pi-ax run pack:dry && pnpm --filter pi-bash-tools run pack:dry",
+    "changeset": "changeset",
+    "version-packages": "changeset version && pnpm install --lockfile-only",
+    "release": "node scripts/publish-packages.mjs"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "@oxlint/plugins": "1.79.0",
+    "@types/node": "catalog:",
+    "oxlint": "1.79.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "tsx": "^4.23.13",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.19.0",
+    "pnpm": "12.3.4"
+  },
+  "packageManager": "pnpm@12.3.4"
+}

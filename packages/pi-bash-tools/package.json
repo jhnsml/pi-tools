@@ -1,0 +1,68 @@
+{
+  "name": "pi-bash-tools",
+  "version": "0.1.0",
+  "description": "Typed Pi tools for modern command-line utilities",
+  "keywords": [
+    "cli",
+    "developer-tools",
+    "pi",
+    "pi-extension",
+    "pi-package"
+  ],
+  "homepage": "https://github.com/jhnsml/pi-tools/tree/main/packages/pi-bash-tools#readme",
+  "bugs": {
+    "url": "https://github.com/jhnsml/pi-tools/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhnsml/pi-tools.git",
+    "directory": "packages/pi-bash-tools"
+  },
+  "files": [
+    "extensions",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "test": "vp test run",
+    "test:coverage": "vp test run --coverage",
+    "test:smoke": "vp test run --config vite.smoke.config.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "vp check",
+    "pack:dry": "pnpm pack --dry-run"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.9",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "^4.1.11",
+    "typebox": "^1.3.25",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "typebox": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/bash-tools.ts"
+    ]
+  }
+}

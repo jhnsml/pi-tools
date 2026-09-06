@@ -1,0 +1,41 @@
+# pi-tools
+
+A pnpm workspace for independently published Pi packages:
+
+- [`pi-ax`](./packages/pi-ax) — a read-only `ax` web extraction tool.
+- [`pi-bash-tools`](./packages/pi-bash-tools) — typed tools for modern command-line utilities.
+
+The package names and Pi extension manifests remain unchanged, so npm consumers can continue to install them independently.
+
+## Development
+
+The repository uses Node.js 24.20.0 for development and CI, supports Node.js `>=22.19.0` for the published packages, and pins the latest pnpm version used by the workspace in the root `package.json`.
+
+```bash
+pnpm install
+pnpm check
+pnpm test
+pnpm test:coverage
+pnpm test:smoke
+pnpm pack:dry
+```
+
+Run one package with pnpm filters:
+
+```bash
+pnpm --filter pi-ax check
+pnpm --filter pi-bash-tools test
+```
+
+Vite+ provides the repository's Oxfmt, Oxlint, Vitest, and TypeScript checks. The vendored generic anti-slop Oxlint plugin lives under [`tools/oxlint/anti-slop`](./tools/oxlint/anti-slop) and is enabled for both packages. Test scaffolding and the existing Pi/ax parsing and result-shaping seams have documented configuration exceptions where the rules do not model their runtime contracts.
+
+## Releases
+
+Each package has its own version and changelog. Add a Changeset for every published change:
+
+```bash
+pnpm changeset
+pnpm version-packages
+```
+
+The release workflow uses GitHub Actions trusted publishing with npm provenance. Configure a trusted publisher for both npm packages before enabling publication. The old package repositories remain available as archives; new installations should use npm package names.

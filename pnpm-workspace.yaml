@@ -1,0 +1,17 @@
+packages:
+  - packages/*
+
+catalog:
+  "@types/node": ^24.13.3
+  typescript: ^7.0.2
+  vite-plus: ^0.3.0
+
+allowBuilds:
+  "@google/genai": false
+  esbuild: true
+  protobufjs: false
+
+minimumReleaseAgeExclude:
+  - "@earendil-works/pi-agent-core@0.80.10"
+  - "@earendil-works/pi-ai@0.80.9 || 0.80.10"
+  - "@earendil-works/pi-tui@0.80.10"

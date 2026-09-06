@@ -1,0 +1,78 @@
+{
+  "name": "pi-ax",
+  "version": "0.1.0",
+  "description": "Pi native ax tool for read-only web fetch, discovery, and extraction",
+  "keywords": [
+    "ax",
+    "pi",
+    "pi-extension",
+    "pi-package",
+    "web-extraction"
+  ],
+  "homepage": "https://github.com/jhnsml/pi-tools/tree/main/packages/pi-ax#readme",
+  "bugs": {
+    "url": "https://github.com/jhnsml/pi-tools/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhnsml/pi-tools.git",
+    "directory": "packages/pi-ax"
+  },
+  "files": [
+    "extensions",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "test": "vp test run",
+    "test:coverage": "vp test run --coverage",
+    "typecheck": "tsc --noEmit",
+    "check": "vp check",
+    "pack:dry": "pnpm pack --dry-run"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-ai": "^0.84.4",
+    "@earendil-works/pi-coding-agent": "^0.84.4",
+    "@earendil-works/pi-tui": "^0.84.4",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "^4.1.11",
+    "typebox": "^1.3.25",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-ai": {
+      "optional": true
+    },
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "@earendil-works/pi-tui": {
+      "optional": true
+    },
+    "typebox": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/ax.ts"
+    ]
+  }
+}
