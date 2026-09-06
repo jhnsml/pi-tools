@@ -1,4 +1,4 @@
-# pi-bash-tools
+# @jhnsml/pi-bash-tools
 
 ## 0.1.0
 
