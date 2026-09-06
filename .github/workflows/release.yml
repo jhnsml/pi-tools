@@ -31,6 +31,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: changesets/action@ae5c373a18fe02dac7d40bcbc0184758c90d94d2 # maintenance/v1
         with:
+          commit: "chore: version packages"
+          title: "chore: version packages"
           version: pnpm version-packages
           publish: pnpm release
         env:

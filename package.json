@@ -17,12 +17,15 @@
     "test:anti-slop": "node scripts/test-anti-slop.mjs",
     "typecheck:anti-slop": "tsc --noEmit -p tools/oxlint/anti-slop/tsconfig.json",
     "pack:dry": "pnpm --filter pi-ax run pack:dry && pnpm --filter pi-bash-tools run pack:dry",
+    "prepare": "vp config --no-agent",
     "changeset": "changeset",
     "version-packages": "changeset version && pnpm install --lockfile-only",
     "release": "node scripts/publish-packages.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "@oxlint/plugins": "1.79.0",
     "@types/node": "catalog:",
     "oxlint": "1.79.0",

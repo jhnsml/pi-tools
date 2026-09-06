@@ -27,7 +27,9 @@ pnpm --filter pi-ax check
 pnpm --filter pi-bash-tools test
 ```
 
-Vite+ provides the repository's Oxfmt, Oxlint, Vitest, and TypeScript checks. The vendored generic anti-slop Oxlint plugin lives under [`tools/oxlint/anti-slop`](./tools/oxlint/anti-slop) and is enabled for both packages. Test scaffolding and the existing Pi/ax parsing and result-shaping seams have documented configuration exceptions where the rules do not model their runtime contracts.
+Vite+ provides the repository's Oxfmt, Oxlint, Vitest, TypeScript, staged-file checks, and Git hook dispatcher. The vendored generic anti-slop Oxlint plugin lives under [`tools/oxlint/anti-slop`](./tools/oxlint/anti-slop) and is enabled for both packages. Test scaffolding and the existing Pi/ax parsing and result-shaping seams have documented configuration exceptions where the rules do not model their runtime contracts.
+
+Commits use the [Conventional Commits](https://www.conventionalcommits.org/) format and are validated locally by Commitlint and in pull-request CI. Vite+ manages the hooks without Husky; `pnpm install` installs the dispatcher, while `VP_GIT_HOOKS=0` disables hooks for a single command.
 
 ## Releases
 
