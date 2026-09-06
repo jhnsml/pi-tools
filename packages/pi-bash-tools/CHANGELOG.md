@@ -1,7 +1,5 @@
 # pi-bash-tools
 
-## 0.1.1
+## 0.1.0
 
-### Patch Changes
-
-- 4a62ea3: Improve package documentation with upstream project links and a concise `pi-ax` usage reference.
+- Initial release.
