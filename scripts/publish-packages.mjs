@@ -46,7 +46,7 @@ for (const relativeDirectory of packageDirectories) {
   const tarball = packOutput.split("\n").at(-1);
   if (!tarball) throw new Error(`pnpm pack did not return a tarball for ${manifest.name}`);
 
-  execFileSync("npm", ["publish", tarball, "--access", "public", "--provenance"], {
+  execFileSync("npm", ["publish", tarball, "--access", "public"], {
     cwd: root,
     stdio: "inherit",
   });
