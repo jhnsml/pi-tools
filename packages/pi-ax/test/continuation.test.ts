@@ -1,11 +1,21 @@
-import { readFileSync, rmSync } from "node:fs";
-import { dirname } from "node:path";
-import { afterEach, describe, expect, it } from "vite-plus/test";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { afterAll, afterEach, describe, expect, it } from "vite-plus/test";
 import type { ExtensionAPI, ToolDefinition } from "@earendil-works/pi-coding-agent";
 import extension from "../extensions/ax.js";
 import { MAX_OUTPUT_BYTES, MIN_AX_VERSION, type AxDetails, type AxParams } from "../src/types.js";
 
 const spills: string[] = [];
+const agentDirectory = mkdtempSync(join(tmpdir(), "pi-ax-continuation-agent-"));
+const previousAgentDirectory = process.env.PI_CODING_AGENT_DIR;
+process.env.PI_CODING_AGENT_DIR = agentDirectory;
+afterAll(() => {
+  if (previousAgentDirectory === undefined) delete process.env.PI_CODING_AGENT_DIR;
+  else process.env.PI_CODING_AGENT_DIR = previousAgentDirectory;
+  rmSync(agentDirectory, { recursive: true, force: true });
+});
+
 afterEach(() => {
   for (const path of spills.splice(0)) rmSync(dirname(path), { recursive: true });
 });

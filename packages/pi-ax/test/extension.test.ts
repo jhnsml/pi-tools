@@ -1,7 +1,7 @@
-import { writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
+import { afterAll, afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
 import type { ExtensionAPI, ToolDefinition } from "@earendil-works/pi-coding-agent";
 import {
   getKeybindings,
@@ -13,7 +13,16 @@ import extension from "../extensions/ax.js";
 import { MIN_AX_VERSION, type AxBatchDetails } from "../src/types.js";
 
 const source = join(tmpdir(), "pi-ax-extension-fixture.html");
+const agentDirectory = mkdtempSync(join(tmpdir(), "pi-ax-extension-agent-"));
+const previousAgentDirectory = process.env.PI_CODING_AGENT_DIR;
+process.env.PI_CODING_AGENT_DIR = agentDirectory;
 writeFileSync(source, "fixture");
+
+afterAll(() => {
+  if (previousAgentDirectory === undefined) delete process.env.PI_CODING_AGENT_DIR;
+  else process.env.PI_CODING_AGENT_DIR = previousAgentDirectory;
+  rmSync(agentDirectory, { recursive: true, force: true });
+});
 
 const keybindingDefinitions = {
   "app.tools.expand": { defaultKeys: "ctrl+o", description: "Toggle tool output" },

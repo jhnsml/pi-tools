@@ -1,6 +1,7 @@
-import { readFileSync, rmSync } from "node:fs";
-import { dirname } from "node:path";
-import { describe, expect, it } from "vite-plus/test";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { afterAll, describe, expect, it } from "vite-plus/test";
 import { executeAx, type AxExec } from "../src/execute.js";
 import {
   MAX_BATCH_CONCURRENCY,
@@ -11,7 +12,10 @@ import {
   type AxParams,
 } from "../src/types.js";
 
-const context = { cwd: "/tmp" };
+const outputDirectory = mkdtempSync(join(tmpdir(), "pi-ax-batch-test-"));
+const context = { cwd: "/tmp", tempDir: outputDirectory };
+afterAll(() => rmSync(outputDirectory, { recursive: true, force: true }));
+
 const request = (name: string, operation: "fetch" | "row" = "fetch") =>
   operation === "row"
     ? {

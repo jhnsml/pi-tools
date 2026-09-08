@@ -8,7 +8,7 @@ import {
   type ExtensionCommandContext,
   type ToolDefinition,
 } from "@earendil-works/pi-coding-agent";
-import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { afterAll, afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { Value } from "typebox/value";
 import extension from "../extensions/bash-tools.js";
 
@@ -51,6 +51,16 @@ function createJumpContext(source?: string) {
   } as unknown as ExtensionCommandContext;
   return { ctx, notify, confirm, switchSession };
 }
+
+const agentDirectory = mkdtempSync(join(tmpdir(), "pi-bash-tools-agent-"));
+const previousAgentDirectory = process.env.PI_CODING_AGENT_DIR;
+process.env.PI_CODING_AGENT_DIR = agentDirectory;
+
+afterAll(() => {
+  if (previousAgentDirectory === undefined) delete process.env.PI_CODING_AGENT_DIR;
+  else process.env.PI_CODING_AGENT_DIR = previousAgentDirectory;
+  rmSync(agentDirectory, { recursive: true, force: true });
+});
 
 const tempDirs = new Set<string>();
 function tempDirectory(prefix: string) {

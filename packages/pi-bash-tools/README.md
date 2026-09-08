@@ -54,7 +54,7 @@ Pi validates tool inputs before execution and passes query expressions separatel
 
 ### Output
 
-Tool output is limited to 2,000 lines or 50 KB. Diagnostics appear before standard output. If the result is truncated, it includes the path to a temporary file containing the complete combined output.
+Tool output is limited to 2,000 lines or 50 KB. Diagnostics appear before standard output. If the result is truncated, it includes the path to a file under Pi's agent data directory (`~/.pi/agent/tmp/pi-bash-tools/`, or the directory selected by `PI_CODING_AGENT_DIR`) containing the complete combined output.
 
 ## Design
 

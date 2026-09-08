@@ -1,7 +1,7 @@
-import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it, vi } from "vite-plus/test";
+import { afterAll, describe, expect, it, vi } from "vite-plus/test";
 import { axBinary, executeAx, type AxExec } from "../src/execute.js";
 import {
   MAX_OUTPUT_BYTES,
@@ -10,10 +10,13 @@ import {
   type AxExecResult,
 } from "../src/types.js";
 
-const context = { cwd: "/tmp" };
+const outputDirectory = mkdtempSync(join(tmpdir(), "pi-ax-execute-test-"));
+const context = { cwd: "/tmp", tempDir: outputDirectory };
 const fileSource = "/tmp/pi-ax-execute-fixture.html";
 const urlSource = "https://example.com/docs";
 writeFileSync(fileSource, "fixture");
+
+afterAll(() => rmSync(outputDirectory, { recursive: true, force: true }));
 
 type ExecCall = {
   command: string;
@@ -338,7 +341,7 @@ describe("executeAx", () => {
   });
 
   it("rechecks cancellation after asynchronously spilling output and removes the spill", async () => {
-    const before = new Set(readdirSync(tmpdir()).filter((name) => name.startsWith("pi-ax-")));
+    const before = new Set(readdirSync(outputDirectory));
     let abortReads = 0;
     const signal = {
       get aborted() {
@@ -360,10 +363,10 @@ describe("executeAx", () => {
       executeAx(exec, { source: urlSource, operation: "fetch" }, { ...context, signal }),
     ).rejects.toThrow(/cancelled/);
     expect(abortReads).toBe(3);
-    const leaked = readdirSync(tmpdir()).filter((name) => {
-      if (!name.startsWith("pi-ax-") || before.has(name)) return false;
+    const leaked = readdirSync(outputDirectory).filter((name) => {
+      if (!name.startsWith("output-") || before.has(name)) return false;
       try {
-        return readFileSync(join(tmpdir(), name, "stdout.txt"), "utf8").includes(
+        return readFileSync(join(outputDirectory, name, "stdout.txt"), "utf8").includes(
           "cleanup-sentinel-",
         );
       } catch {
@@ -382,7 +385,7 @@ describe("executeAx", () => {
     expect(result.details.preview).toMatch(/first output line exceeds the preview limit/i);
     expect(result.details.preview).not.toBe("");
     expect(result.details.truncation?.firstLineExceedsLimit).toBe(true);
-    expect(result.details.fullOutputPath).toMatch(/pi-ax-.*stdout\.txt$/);
+    expect(result.details.fullOutputPath).toContain(join(outputDirectory, "output-"));
     expect(result.content[0]?.text).toContain(result.details.preview);
   });
 
@@ -412,7 +415,7 @@ describe("executeAx", () => {
       context,
     );
     expect(result.details.truncated).toBe(true);
-    expect(result.details.fullOutputPath).toMatch(/pi-ax-.*stdout\.txt$/);
+    expect(result.details.fullOutputPath).toContain(join(outputDirectory, "output-"));
     expect(result.details.truncation?.totalBytes).toBeGreaterThan(MAX_OUTPUT_BYTES);
     expect(result.content[0]?.text).toContain('"truncation":');
     expect(result.content[0]?.text).toContain(result.details.fullOutputPath!);
