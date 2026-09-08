@@ -1,6 +1,6 @@
 {
   "name": "@jhnsml/pi-bash-tools",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Typed Pi tools for modern command-line utilities",
   "keywords": [
     "cli",
