@@ -7,7 +7,7 @@ import {
   withFileMutationQueue,
   type ExtensionAPI,
 } from "@earendil-works/pi-coding-agent";
-import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { afterAll, afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { runCommand } from "../extensions/lib/command-runner.js";
 
 const cleanup = new Set<string>();
@@ -27,7 +27,9 @@ function deferred() {
 function result(stdout = "ok", stderr = "", code = 0) {
   return { stdout, stderr, code, killed: false };
 }
-const options = { cwd: tmpdir(), timeout: 10000 };
+const outputDirectory = mkdtempSync(join(tmpdir(), "pi-bash-tools-output-test-"));
+const options = { cwd: tmpdir(), timeout: 10000, tempDir: outputDirectory };
+afterAll(() => rmSync(outputDirectory, { recursive: true, force: true }));
 
 function expectBounded(text: string) {
   expect(Buffer.byteLength(text)).toBeLessThanOrEqual(DEFAULT_MAX_BYTES);
@@ -46,7 +48,11 @@ describe("command runner", () => {
     const signal = new AbortController().signal;
     const args = ["--sort", "code", "path with spaces; $(literal)"];
     const output = await runCommand({ exec }, "scc", args, { ...options, signal });
-    expect(exec).toHaveBeenCalledExactlyOnceWith("scc", args, { ...options, signal });
+    expect(exec).toHaveBeenCalledExactlyOnceWith("scc", args, {
+      cwd: options.cwd,
+      signal,
+      timeout: options.timeout,
+    });
     expect(output).toEqual({
       content: [{ type: "text", text: "stats" }],
       details: { exitCode: 0, stdout: "stats", stdoutTruncated: false },
@@ -71,6 +77,7 @@ describe("command runner", () => {
       const output = await runCommand({ exec }, "bat", [], options);
       expectBounded(output.content[0].text);
       if (output.details.fullOutputPath) {
+        expect(output.details.fullOutputPath).toContain(outputDirectory);
         expect(savedOutput(output.details.fullOutputPath)).toBe(stdout);
       } else {
         expect(output.content[0]?.text).toBe(stdout);

@@ -1,10 +1,10 @@
-import { mkdtemp, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import {
   DEFAULT_MAX_BYTES,
   DEFAULT_MAX_LINES,
+  getAgentDir,
   truncateHead,
   withFileMutationQueue,
   type ExtensionAPI,
@@ -18,6 +18,8 @@ type CommandOptions = {
   okCodes?: number[];
   emptyOutput?: string;
   mutationPath?: string;
+  /** Override the package-owned Pi temp directory; useful for deterministic tests. */
+  tempDir?: string;
 };
 
 type OutputDetails = {
@@ -30,12 +32,15 @@ function shellQuote(arg: string) {
   return `'${arg.replaceAll("'", "'\\''")}'`;
 }
 
-async function boundOutput(output: string) {
+const DEFAULT_TEMP_DIR = "tmp/pi-bash-tools";
+
+async function boundOutput(output: string, tempDir = join(getAgentDir(), DEFAULT_TEMP_DIR)) {
   let truncation = truncateHead(output);
   const details: OutputDetails = {};
   if (!truncation.truncated) return { text: output, details };
 
-  const dir = await mkdtemp(join(tmpdir(), "pi-command-"));
+  await mkdir(tempDir, { recursive: true, mode: 0o700 });
+  const dir = await mkdtemp(join(tempDir, "output-"));
   const path = join(dir, "output.txt");
   await withFileMutationQueue(path, () => writeFile(path, output, "utf8"));
   const notice = `\n\n[Output truncated. Full output saved to: ${path}]`;
@@ -102,7 +107,7 @@ export async function runCommand(
     // Put diagnostics first so a large stdout cannot hide a warning behind truncation.
     const stdout = result.stdout || options.emptyOutput || "";
     const output = result.stderr ? `[stderr]\n${result.stderr}\n\n[stdout]\n${stdout}` : stdout;
-    const { text, details } = await boundOutput(output);
+    const { text, details } = await boundOutput(output, options.tempDir);
     options.signal?.throwIfAborted();
     const rawStdout = truncateHead(result.stdout);
     return {
@@ -118,7 +123,7 @@ export async function runCommand(
   } catch (error) {
     const formatted = [command, ...args].map(shellQuote).join(" ");
     const message = error instanceof Error ? error.message : String(error);
-    const { text } = await boundOutput(`${formatted} failed: ${message}`);
+    const { text } = await boundOutput(`${formatted} failed: ${message}`, options.tempDir);
     throw new Error(text);
   }
 }

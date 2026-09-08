@@ -66,7 +66,7 @@ Use either one request or a `requests` array of 1–10 complete requests. Batche
 
 - Parse operations support `limit`, `offset`, `all`, and `budget`. `fetch` supports `all` and `budget`.
 - `locate`, `row`, and `table` can return a `jsonEnvelope` with continuation metadata. Continue with `offset=meta.next_offset` only when `meta.state` is `more`; the adapter never fetches the next page automatically.
-- Output is bounded. When a preview is clipped, read the saved output file before continuing. The saved file contains the current result page only.
+- Output is bounded. When a preview is clipped, read the saved output file before continuing. Saved files live under Pi's agent data directory (`~/.pi/agent/tmp/pi-ax/`, or the directory selected by `PI_CODING_AGENT_DIR`) and contain the current result page only.
 - Press <kbd>Ctrl</kbd>+<kbd>O</kbd>, or your configured `app.tools.expand` shortcut, to expand the bounded preview.
 - HTTP error responses are reported as received responses; process failures still throw. Adapter metadata is kept separate from untrusted fetched content.
 

@@ -1,7 +1,6 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { formatSize, truncateHead } from "@earendil-works/pi-coding-agent";
+import { formatSize, getAgentDir, truncateHead } from "@earendil-works/pi-coding-agent";
 import { buildAxRequest } from "./argv.js";
 import { interpretOutcome } from "./outcome.js";
 import { interpretContinuation } from "./continuation.js";
@@ -139,9 +138,16 @@ function errorMessage(
   return parts.join("\n\n");
 }
 
-async function spillOutput(output: string, signal?: AbortSignal): Promise<string> {
+const DEFAULT_TEMP_DIR = "tmp/pi-ax";
+
+async function spillOutput(
+  output: string,
+  signal?: AbortSignal,
+  tempDir = join(getAgentDir(), DEFAULT_TEMP_DIR),
+): Promise<string> {
   signal?.throwIfAborted();
-  const directory = await mkdtemp(join(tmpdir(), "pi-ax-"));
+  await mkdir(tempDir, { recursive: true, mode: 0o700 });
+  const directory = await mkdtemp(join(tempDir, "output-"));
   const path = join(directory, "stdout.txt");
   try {
     await writeFile(path, output, { encoding: "utf8", signal });
@@ -290,7 +296,7 @@ async function executePreparedAx(
   exec: AxExec,
   params: AxRequestParams,
   request: PreparedAxRequest,
-  context: { cwd: string; signal?: AbortSignal },
+  context: { cwd: string; signal?: AbortSignal; tempDir?: string },
   options: { skipVersionCheck?: boolean; batch?: boolean } = {},
 ): Promise<AxDetails> {
   const binary = axBinary();
@@ -366,7 +372,7 @@ async function executePreparedAx(
   const truncated = visible.truncated || Boolean(serializedClipped);
   if (truncated) {
     try {
-      fullOutputPath = await spillOutput(safeOutput, context.signal);
+      fullOutputPath = await spillOutput(safeOutput, context.signal, context.tempDir);
     } catch (error) {
       rethrowExecError(error, context.signal);
     }
@@ -603,6 +609,8 @@ function formatBatch(details: AxBatchDetails): string {
 type ExecuteContext = {
   cwd: string;
   signal?: AbortSignal;
+  /** Override the package-owned Pi temp directory; useful for deterministic tests. */
+  tempDir?: string;
   batchDeadlineMs?: number;
   onProgress?: (progress: AxBatchProgressDetails) => void;
 };
@@ -683,7 +691,7 @@ async function executeBatch(
             exec,
             current.params,
             current.request,
-            { cwd: context.cwd, signal: controller.signal },
+            { cwd: context.cwd, signal: controller.signal, tempDir: context.tempDir },
             { skipVersionCheck: true, batch: true },
           );
           items[index] = batchItemFromDetails(index, details);
